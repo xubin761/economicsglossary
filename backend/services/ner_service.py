@@ -14,7 +14,8 @@ class NERService:
     def __init__(self):
         # 初始化 NER 模型，使用 GPU 如果可用
         self.pipe = pipeline("token-classification", 
-                           model="Clinical-AI-Apollo/Medical-NER", 
+                        #    model="Clinical-AI-Apollo/Medical-NER", 
+                           model="AhmedTaha012/finance-ner-v0.0.9-finetuned-ner", 
                            aggregation_strategy='simple',
                            device=0 if torch.cuda.is_available() else -1)
   
@@ -36,8 +37,10 @@ class NERService:
         # 确保结果是实体列表
         if isinstance(result, dict):
             result = result.get('entities', [])
+
         
         # 合并相关实体（如生物结构和症状）
+
         combined_result = self._combine_entities(result, text, options)
         
         # 移除重叠实体
@@ -61,7 +64,7 @@ class NERService:
             entity = result[i]
             entity['score'] = float(entity['score'])
 
-            if options['combineEcoStructure'] and entity['entity_group'] in ['SIGN_SYMPTOM', 'DISEASE_DISORDER']:
+            if options['combineEcoStructure'] and entity['entity_group'] in ['revenue', 'loss','expense','profit']:
                 # 检查并合并生物结构
                 combined_entity = self._try_combine_with_bio_structure(result, i, text)
                 if combined_entity:
@@ -77,10 +80,10 @@ class NERService:
         尝试将当前实体与生物结构实体合并
         """
         # 检查前一个实体
-        if i > 0 and result[i-1]['entity_group'] == 'BIOLOGICAL_STRUCTURE':
+        if i > 0 and result[i-1]['entity_group'] == 'profit':
             return self._create_combined_entity(result[i-1], result[i], text)
         # 检查后一个实体
-        elif i < len(result) - 1 and result[i+1]['entity_group'] == 'BIOLOGICAL_STRUCTURE':
+        elif i < len(result) - 1 and result[i+1]['entity_group'] == 'profit':
             return self._create_combined_entity(result[i], result[i+1], text)
         return None
 
@@ -92,7 +95,7 @@ class NERService:
         end = max(entity1['end'], entity2['end'])
         word = text[start:end]
         return {
-            'entity_group': 'COMBINED_BIO_SYMPTOM',
+            'entity_group': 'lost',
             'word': word,
             'start': start,
             'end': end,
@@ -144,9 +147,9 @@ class NERService:
         for entity in entities:
             if term_types.get('allEconomicsTerms', False):
                 filtered_result.append(entity)
-            elif (term_types.get('symptom', False) and entity['entity_group'] in ['SIGN_SYMPTOM', 'COMBINED_BIO_SYMPTOM']) or \
-                 (term_types.get('disease', False) and entity['entity_group'] == 'DISEASE_DISORDER') or \
-                 (term_types.get('therapeuticProcedure', False) and entity['entity_group'] == 'THERAPEUTIC_PROCEDURE'):
+            elif (term_types.get('revenue', False) and entity['entity_group'] in ['revenue', 'loss','expense','profit']) or \
+                 (term_types.get('lost', False) and entity['entity_group'] == 'lost') or \
+                 (term_types.get('profit', False) and entity['entity_group'] == 'profit'):
                 filtered_result.append(entity)
         return filtered_result
 

@@ -184,8 +184,11 @@ async def standardization(input: TextInput):
 
         # 获取识别到的实体
         entities = ner_results.get('entities', [])
+
+        print(entities) 
+        
         if not entities:
-            return {"message": "No medical terms have been recognized", "standardized_terms": []}
+            return {"message": "No economics terms have been recognized", "standardized_terms": []}
 
         # 标准化每个实体
         standardized_results = []
