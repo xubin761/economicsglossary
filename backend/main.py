@@ -60,7 +60,7 @@ class EmbeddingOptions(BaseModel):
         description="向量数据库名称"
     )
     collectionName: str = Field(
-        default="concepts_only_name",
+        default="economics_only_name",
         description="集合名称"
     )
 
@@ -168,8 +168,8 @@ async def standardization(input: TextInput):
         logger.info(f"Received request: text={input.text}, options={input.options}, embeddingOptions={input.embeddingOptions}")
 
         # 配置术语类型
-        all_medical_terms = input.options.pop('allMedicalTerms', False)
-        term_types = {'allMedicalTerms': all_medical_terms}
+        all_economics_terms = input.options.pop('allEconomicsTerms', False)
+        term_types = {'allEconomicsTerms': all_economics_terms}
 
         # 进行命名实体识别
         ner_results = ner_service.process(input.text, input.options, term_types)
@@ -198,7 +198,7 @@ async def standardization(input: TextInput):
             })
 
         return {
-            "message": f"{len(entities)} medical terms have been recognized and standardized",
+            "message": f"{len(entities)} economics terms have been recognized and standardized",
             "standardized_terms": standardized_results
         }
 

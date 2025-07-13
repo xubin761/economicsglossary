@@ -61,7 +61,7 @@ class NERService:
             entity = result[i]
             entity['score'] = float(entity['score'])
 
-            if options['combineBioStructure'] and entity['entity_group'] in ['SIGN_SYMPTOM', 'DISEASE_DISORDER']:
+            if options['combineEcoStructure'] and entity['entity_group'] in ['SIGN_SYMPTOM', 'DISEASE_DISORDER']:
                 # 检查并合并生物结构
                 combined_entity = self._try_combine_with_bio_structure(result, i, text)
                 if combined_entity:
@@ -142,7 +142,7 @@ class NERService:
         """
         filtered_result = []
         for entity in entities:
-            if term_types.get('allMedicalTerms', False):
+            if term_types.get('allEconomicsTerms', False):
                 filtered_result.append(entity)
             elif (term_types.get('symptom', False) and entity['entity_group'] in ['SIGN_SYMPTOM', 'COMBINED_BIO_SYMPTOM']) or \
                  (term_types.get('disease', False) and entity['entity_group'] == 'DISEASE_DISORDER') or \

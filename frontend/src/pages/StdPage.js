@@ -11,7 +11,7 @@ const StdPage = () => {
   // 重新组织选项结构，默认选中所有选项
   const [options, setOptions] = useState({
     // disease: true,
-    // combineBioStructure: true,
+     combineEcoStructure: true,
     // medicine: true,
     // laboratory: true,
     // physicalExamination: true,
@@ -20,7 +20,7 @@ const StdPage = () => {
     // commonMedicalObservations: true,
     // lifestyleObservations: true,
     // cognitiveBehaviorItems: true,
-    // allMedicalTerms: true,
+    allEconomicsTerms: true,
     economics: true, 
     marketing : true
 
@@ -29,14 +29,14 @@ const StdPage = () => {
   const [embeddingOptions, setEmbeddingOptions] = useState({
     provider: 'huggingface',
     model: 'BAAI/bge-m3',
-    dbName: 'snomed_bge_m3',
+    // dbName: 'snomed_bge_m3',
     collectionName: 'economics_only_name'
   });
 
   const handleOptionChange = (e) => {
     const { name, checked } = e.target;
     
-    if (name === 'allMedicalTerms') {
+    if (name === 'allEconomicsTerms') {
       // 如果选择 allMedicalTerms，则设置所有选项为相同状态
       setOptions(prevOptions => {
         const newOptions = {};
@@ -51,9 +51,9 @@ const StdPage = () => {
         ...prevOptions,
         [name]: checked,
         // 如果取消选择任何一个选项，allMedicalTerms 也取消选择
-        allMedicalTerms: checked && 
+        allEconomicsTerms: checked && 
           Object.entries(prevOptions)
-            .filter(([key]) => key !== 'allMedicalTerms' && key !== name)
+            .filter(([key]) => key !== 'allEconomicsTerms' && key !== name)
             .every(([, value]) => value)
       }));
     }
@@ -149,13 +149,13 @@ const StdPage = () => {
             <div className="flex items-center pt-4 border-t">
               <input
                 type="checkbox"
-                id="allMedicalTerms"
-                name="allMedicalTerms"
-                checked={options.allMedicalTerms}
+                id="allEconomicsTerms"
+                name="allEconomicsTerms"
+                checked={options.allEconomicsTerms}
                 onChange={handleOptionChange}
                 className="mr-2"
               />
-              <label htmlFor="allMedicalTerms" className="font-semibold">所有经济术语</label>
+              <label htmlFor="allEconomicsTerms" className="font-semibold">所有经济术语</label>
             </div>
           </div>
         </div>
